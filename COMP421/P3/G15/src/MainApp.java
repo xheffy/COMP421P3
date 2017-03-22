@@ -6,32 +6,22 @@
 import java.util.*;
 import java.sql.*;
 import java.math.*;
-
-//for PSQL
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.ibm.db2.jcc.*;
 
 public class MainApp {
-	public static void main(String args[]) throws SQLException{
-        
+
+	public static void main(String args[]) throws SQLException{    
 		//Set up driver
 		try {
-			//Driver myDriver = new oracle.jdbc.driver.OracleDriver();
-			//DriverManager.registerDriver(myDriver);
-			//Driver myDriver = new com.ibm.db2.jcc.DB2Driver();
-			//Class.forName("com.ibm.db2.jcc.DB2Driver");
-			//DriverManager.registerDriver (new org.postgresql.Driver());
-			DriverManager.registerDriver (new com.ibm.db2.jcc.DB2Driver());
-		} catch (Exception ex) { //catch (ClassNotFoundException ex){
-			   System.out.println("Error: unable to load driver class!");
-			   System.exit(1);
+			Driver myDriver = new DB2Driver();
+			DriverManager.registerDriver (myDriver);
+		} catch (SQLException sqle) {
+			System.out.println("Access Error");
+			System.exit(1);
 		}
 		
 		//Connect to DB
-		//String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
 		Connection conn = DriverManager.getConnection("jdbc:db2://comp421.cs.mcgill.ca:5432/cs421", "cs421g15", "fsdb1517");
-		//Connection conn = DriverManager.getConnection(url, "cs421g15", "fsdb1517");
 
 		try {
 			boolean end = true;
@@ -56,13 +46,16 @@ public class MainApp {
 				}
 			}
 			System.out.println("Quitting application .... ");
-			//Disconnect 
+			
+		} catch (SQLException sqle){
+			sqle.printStackTrace();
+		} catch (Exception e){
+			e.printStackTrace();
 		} finally {
 			try {
 				conn.close();
-			} catch (SQLException e){
-				System.out.println("Could not close JDBC connection");
-				//logger.warn("Could not close JDBC Connection", e);
+			} catch (SQLException sqle){
+				sqle.printStackTrace();
 			}
 		}
 	}

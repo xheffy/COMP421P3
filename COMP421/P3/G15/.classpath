@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/db2jcc4.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-42.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Heffy/Documents/GitHub/COMP421P3/COMP421/P3/G15/src/db2jcc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
