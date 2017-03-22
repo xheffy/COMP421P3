@@ -14,6 +14,9 @@ import java.sql.SQLException;
 
 public class MainApp {
 	public static void main(String args[]) throws SQLException{
+		
+		int sqlCode=0;      // Variable to hold SQLCODE
+        String sqlState="00000";  // Variable to hold SQLSTATE
         
 		//Set up driver
 		try {
@@ -32,22 +35,22 @@ public class MainApp {
 		//String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
 		Connection conn = DriverManager.getConnection("jdbc:db2://comp421.cs.mcgill.ca:5432/cs421", "cs421g15", "fsdb1517");
 		//Connection conn = DriverManager.getConnection(url, "cs421g15", "fsdb1517");
-
+		Statement stmt = conn.createStatement();
 		try {
 			boolean end = true;
 			while(end){
 				int choice = getOptionInput();
 
 				switch (choice) {
-					case 1:	queryEmployeeList();
+					case 1:	queryEmployeeList(conn,stmt);
 							break;
-					case 2: queryCustomerOrder();
+					case 2: queryCustomerOrder(conn,stmt);
 							break;
-					case 3: queryOrderProducts();
+					case 3: queryOrderProducts(conn,stmt);
 							break;
-					case 4: addProductToOrder();
+					case 4: addProductToOrder(conn,stmt);
 							break;
-					case 5:	deleteProductFromOrder();
+					case 5:	deleteProductFromOrder(conn,stmt);
 							break;
 					case 6: end = false;
 							break;
@@ -60,6 +63,7 @@ public class MainApp {
 		} finally {
 			try {
 				conn.close();
+				stmt.close ( ) ;
 			} catch (SQLException e){
 				System.out.println("Could not close JDBC connection");
 				//logger.warn("Could not close JDBC Connection", e);
@@ -88,15 +92,15 @@ public class MainApp {
 		return choice;
 	}
 
-	static void queryEmployeeList(){
+	static void queryEmployeeList(Connection conn, Statement stmt){
 	
 	}
 
-	static void queryCustomerOrder(){
+	static void queryCustomerOrder(Connection conn, Statement stmt){
 	
 	}
 
-	static void queryOrderProducts(){
+	static void queryOrderProducts(Connection conn, Statement stmt){
 		//display Order info (with all order attributes) and products in the Order with all 
 		//product attributes (see ER diagram from p2 submission) except inventoryCount 
 		//and price
@@ -104,14 +108,74 @@ public class MainApp {
 		//products list for the order 
 	}
 	
-	static void addProductToOrder(){
+	static void addProductToOrder(Connection conn, Statement stmt){
 		//take as input orderID, then take as input pid
 		//uses 2 SQL statements: one to add the product to the order using OrderList 
 		//entity, and one to update the orderAmount
+		Scanner sc = new Scanner(System.in);
+		System.out.println("To which order do you wish to add products?");
+		System.out.println("Input the orderNo:");
+		int orderNo = sc.nextInt();
+		System.out.println("Which product do you wish to add to this order?");
+		System.out.println("Input the pid:");
+		int pid = sc.nextInt();
+		System.out.println("How many such products do you wish to add to the given order?");
+		System.out.println("Input the quantity:");
+		int quantity = sc.nextInt();
+		sc.close();
+		try{ 
+			try{
+	            String check = "UPDATE OrderList SET quantity = quantity+" + quantity + " WHERE orderNo = " + orderNo + " AND pid = " + pid;
+			    stmt.executeUpdate(check);
+	            String updateOrderAmount = "UPDATE Orders SET orderAmount = orderAmount + (SELECT price FROM Products WHERE pid = " + pid + ")*" + quantity + "WHERE Orders.orderNo = " + orderNo;
+			    stmt.executeUpdate(updateOrderAmount);
+	            System.out.println("Record for given orderNo and pid already exists in OrderList table.");
+	            System.out.println("Quantity was incremented.");
+			}
+			catch(SQLException e){
+	            String insertProduct = "INSERT INTO OrderList VALUES(" + orderNo + "," + pid +"," + quantity + ")"; 
+			    stmt.executeUpdate(insertProduct);
+	            System.out.println("No record exists for given orderNo and pid in OrderList table.");
+	            System.out.println("New record created.");
+			    String updateOrderAmount = "UPDATE Orders SET orderAmount = orderAmount + (SELECT price FROM Products WHERE pid = " + pid + ")*" + quantity + "WHERE Orders.orderNo = " + orderNo;
+			    stmt.executeUpdate(updateOrderAmount);
+			}
+		    System.out.println("Product was added to given order and the order amount was increased accordingly.");
+		}
+		catch(SQLException e)
+		{
+			String message = e.getMessage(); // Get SQLMESSAGE
+			int sqlCode = e.getErrorCode(); // Get SQLCODE
+            String sqlState = e.getSQLState(); // Get SQLSTATE
+            System.out.println("Product and order amount update failed.");
+            System.out.println("Message: " + message + "\nCode: " + sqlCode + "\nsqlState: " + sqlState);
+		}
 	}
 
-	static void deleteProductFromOrder(){
+	static void deleteProductFromOrder(Connection conn, Statement stmt){
 		//take as input orderID, then take as input pid
 		//delete product from order using OrderList entity
+		Scanner sc = new Scanner(System.in);
+		System.out.println("To which order do you wish to add products?");
+		System.out.println("Input the orderNo:");
+		int orderNo = sc.nextInt();
+		System.out.println("Which product do you wish to add to this order?");
+		System.out.println("Input the pid:");
+		int pid = sc.nextInt();
+		sc.close();
+		try{
+			String deleteSQL = "DELETE FROM OrderList WHERE orderNo = " + orderNo + " AND pid = " + pid;
+		    stmt.executeUpdate(deleteSQL);
+		    System.out.println("All products with given pid were deleted from the specified order.");
+		}
+		catch(SQLException e)
+		{
+			String message = e.getMessage(); // Get SQLMESSAGE
+			int sqlCode = e.getErrorCode(); // Get SQLCODE
+            String sqlState = e.getSQLState(); // Get SQLSTATE
+            System.out.println("Deletion of product from order failed.");
+            System.out.println("No record exists for given order and product in OrderList table.");
+            System.out.println("Message: " + message + "\nCode: " + sqlCode + "\nsqlState: " + sqlState);
+		}
 	}
 }
