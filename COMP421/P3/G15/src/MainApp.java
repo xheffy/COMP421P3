@@ -21,7 +21,7 @@ public class MainApp {
 		}
 		
 		//Connect to DB
-		String url = "jdbc:db2://comp421.cs.mcgill.ca:5432/cs421";
+		String url = "jdbc:db2://comp421.cs.mcgill.ca:50000/cs421";
 		Connection conn = null;
 		
 		try {
@@ -33,11 +33,12 @@ public class MainApp {
 		} 
 		
 		Statement stmt = conn.createStatement();
+		Scanner sc = new Scanner(System.in);
 		
 		try { 
 			boolean end = true; 
 			while(end){ 
-				int choice = getOptionInput();
+				int choice = getOptionInput(sc);
 
 				switch (choice) {
 					case 1:	queryEmployeeList(conn,stmt);
@@ -46,9 +47,9 @@ public class MainApp {
 							break;
 					case 3: queryOrderProducts(conn,stmt);
 							break;
-					case 4: addProductToOrder(conn,stmt);
+					case 4: addProductToOrder(conn,stmt,sc);
 							break;
-					case 5:	deleteProductFromOrder(conn,stmt);
+					case 5:	deleteProductFromOrder(conn,stmt,sc);
 							break;
 					case 6: end = false;
 							break;
@@ -60,6 +61,7 @@ public class MainApp {
 			//Disconnect 	
 		} finally {
 			try {
+				sc.close();
 				stmt.close();
 				conn.close();
 			} catch (SQLException e){
@@ -69,7 +71,7 @@ public class MainApp {
 	} 
 
 	//Shows menu and returns user choice integer.
-	static int getOptionInput(){
+	static int getOptionInput(Scanner sc){
 		System.out.println("------------------------------------------");
 		System.out.println("--------------- MAIN MENU ----------------");
 		System.out.println("-----1. Show list of employees------------");
@@ -82,14 +84,17 @@ public class MainApp {
 		System.out.println("---Please type the number corresponding---");
 		System.out.println("---to the action you want to perform------");
 
-		Scanner sc = new Scanner(System.in);
 		int choice = 0;
-		try {
-			choice = sc.nextInt();
-		} catch (InputMismatchException e){
-			System.out.println("not Integer");
+		
+		if (sc.hasNext()){
+			try{
+			    choice = Integer.parseInt(sc.nextLine());
+			} catch (NumberFormatException e) {
+			    System.out.println("wronginput");
+			}
 		}
-		sc.close();
+		
+		System.out.println(choice);
 		System.out.println("------------------------------------------");
 		return choice;
 	}
@@ -110,11 +115,11 @@ public class MainApp {
 		//products list for the order 
 	}
 	
-	static void addProductToOrder(Connection conn, Statement stmt){
+	static void addProductToOrder(Connection conn, Statement stmt,Scanner sc){
 		//take as input orderID, then take as input pid
 		//uses 2 SQL statements: one to add the product to the order using OrderList 
 		//entity, and one to update the orderAmount
-		Scanner sc = new Scanner(System.in);
+		//Scanner sc = new Scanner(System.in);
 		System.out.println("To which order do you wish to add products?");
 		System.out.println("Input the orderNo:");
 		int orderNo = sc.nextInt();
@@ -124,7 +129,7 @@ public class MainApp {
 		System.out.println("How many such products do you wish to add to the given order?");
 		System.out.println("Input the quantity:");
 		int quantity = sc.nextInt();
-		sc.close();
+		//sc.close();
 		try{ 
 			try{
 	            String check = "UPDATE OrderList SET quantity = quantity+" + quantity + " WHERE orderNo = " + orderNo + " AND pid = " + pid;
@@ -154,17 +159,17 @@ public class MainApp {
 		}
 	}
 
-	static void deleteProductFromOrder(Connection conn, Statement stmt){
+	static void deleteProductFromOrder(Connection conn, Statement stmt,Scanner sc){
 		//take as input orderID, then take as input pid
 		//delete product from order using OrderList entity
-		Scanner sc = new Scanner(System.in);
+		//Scanner sc = new Scanner(System.in);
 		System.out.println("To which order do you wish to add products?");
 		System.out.println("Input the orderNo:");
 		int orderNo = sc.nextInt();
 		System.out.println("Which product do you wish to add to this order?");
 		System.out.println("Input the pid:");
 		int pid = sc.nextInt();
-		sc.close();
+		//sc.close();
 		try{
 			String deleteSQL = "DELETE FROM OrderList WHERE orderNo = " + orderNo + " AND pid = " + pid;
 		    stmt.executeUpdate(deleteSQL);
