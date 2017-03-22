@@ -7,38 +7,36 @@ import java.util.*;
 import java.sql.*;
 import java.math.*;
 
-//for PSQL
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class MainApp {
-	public static void main(String args[]) throws SQLException{
-		
-		int sqlCode=0;      // Variable to hold SQLCODE
-        String sqlState="00000";  // Variable to hold SQLSTATE
-        
+	public static void main(String args[]) throws SQLException{   
+
 		//Set up driver
 		try {
-			//Driver myDriver = new oracle.jdbc.driver.OracleDriver();
-			//DriverManager.registerDriver(myDriver);
-			//Driver myDriver = new com.ibm.db2.jcc.DB2Driver();
-			//Class.forName("com.ibm.db2.jcc.DB2Driver");
-			//DriverManager.registerDriver (new org.postgresql.Driver());
-			DriverManager.registerDriver (new com.ibm.db2.jcc.DB2Driver());
-		} catch (Exception ex) { //catch (ClassNotFoundException ex){
-			   System.out.println("Error: unable to load driver class!");
+			Driver myDriver = new com.ibm.db2.jcc.DB2Driver();
+			DriverManager.registerDriver (myDriver);
+		} catch (SQLException ex) {
+			   System.out.println("Driver Setup Error");
 			   System.exit(1);
 		}
 		
 		//Connect to DB
-		//String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
-		Connection conn = DriverManager.getConnection("jdbc:db2://comp421.cs.mcgill.ca:5432/cs421", "cs421g15", "fsdb1517");
-		//Connection conn = DriverManager.getConnection(url, "cs421g15", "fsdb1517");
-		Statement stmt = conn.createStatement();
+		String url = "jdbc:db2://comp421.cs.mcgill.ca:5432/cs421";
+		Connection conn = null;
+		
 		try {
-			boolean end = true;
-			while(end){
+			conn = DriverManager.getConnection(url, "cs421g15", "fsdb1517");
+		} catch (SQLException sqle) {
+			System.out.println("CONNECTION ERROR State: " + sqle.getSQLState());
+			System.out.println("CONNECTION ERROR Message: " + sqle.getMessage());
+			System.exit(1);
+		} 
+		
+		Statement stmt = conn.createStatement();
+		
+		try { 
+			boolean end = true; 
+			while(end){ 
 				int choice = getOptionInput();
 
 				switch (choice) {
@@ -56,20 +54,19 @@ public class MainApp {
 							break;
 					default: System.out.println("Invalid input. Returning to main menu..."); 
 							break;
-				}
-			}
+				} 
+			} 
 			System.out.println("Quitting application .... ");
-			//Disconnect 
+			//Disconnect 	
 		} finally {
 			try {
+				stmt.close();
 				conn.close();
-				stmt.close ( ) ;
 			} catch (SQLException e){
 				System.out.println("Could not close JDBC connection");
-				//logger.warn("Could not close JDBC Connection", e);
 			}
-		}
-	}
+		} 
+	} 
 
 	//Shows menu and returns user choice integer.
 	static int getOptionInput(){
@@ -86,7 +83,12 @@ public class MainApp {
 		System.out.println("---to the action you want to perform------");
 
 		Scanner sc = new Scanner(System.in);
-		int choice = sc.nextInt();
+		int choice = 0;
+		try {
+			choice = sc.nextInt();
+		} catch (InputMismatchException e){
+			System.out.println("not Integer");
+		}
 		sc.close();
 		System.out.println("------------------------------------------");
 		return choice;
