@@ -97,20 +97,80 @@ public class MainApp {
 		return choice;
 	}
 
-	static void queryEmployeeList(Connection conn, Statement stmt){
-	
+	static void queryEmployeeList(Connection conn, Statement stmt) {
+		String empListQ = "SELECT * FROM Employees";
+		try {
+			ResultSet emps = stmt.executeQuery(empListQ);
+			ResultSetMetaData md = emps.getMetaData();
+			int cols = md.getColumnCount();
+			while (emps.next()) {
+				for (int i = 1; i <= cols; i++) {
+					if (i > 1) System.out.print(",  ");
+					String cVal = emps.getString(i);
+					System.out.print(cVal + " " + md.getColumnName(i));
+				}
+				System.out.println("");
+			}
+		} catch(SQLException e) {
+			String message = e.getMessage();
+			System.out.println("Message: " + message);
+		}
 	}
 
-	static void queryCustomerOrder(Connection conn, Statement stmt){
-	
+	static void queryCustomerOrder(Connection conn, Statement stmt, Scanner sc) {
+		System.out.println("Please enter the email of the customer whose orders you wish to view: ");
+		String email = sc.nextLine();
+		String custOrderQ = "SELECT * FROM Orders WHERE email = " + email;
+		try {
+			ResultSet orders = stmt.executeQuery(custOrderQ);
+			ResultSetMetaData md = orders.getMetaData();
+			int cols = md.getColumnCount();
+			while (orders.next()) {
+				for (int i = 1; i <= cols; i++) {
+					if (i > 1) System.out.print(",  ");
+					String cVal = orders.getString(i);
+					System.out.print(cVal + " " + md.getColumnName(i));
+				}
+				System.out.println("");
+			}
+		} catch(SQLException e) {
+			String message = e.getMessage();
+			System.out.println("Message: " + message);
+		}
 	}
 
-	static void queryOrderProducts(Connection conn, Statement stmt){
-		//display Order info (with all order attributes) and products in the Order with all 
-		//product attributes (see ER diagram from p2 submission) except inventoryCount 
-		//and price
-		//uses 2 SQL statements: one to retrieve the order info and one to retrieve the 
-		//products list for the order 
+	static void queryOrderProducts(Connection conn, Statement stmt, Scanner, sc) {
+		System.out.println("Please enter the order no. for the order you wish to view: ");
+		int ono = sc.nextInt();
+		String ordersQ = "SELECT * FROM Orders WHERE orderNo = " + ono;
+		String productsQ = "SELECT P.pid AS id, P.productName AS name, L.quantity AS count FROM Orders O, OrderList L, Products P WHERE O.orderNo = " + ono + " AND O.orderNo = L.orderNo AND L.pid = P.pid";
+		try {
+			ResultSet orders = stmt.executeQuery(ordersQ);
+			ResultSetMetaData md = orders.getMetaData();
+			int cols = md.getColumnCount();
+			while (orders.next()) {
+				for (int i = 1; i <= cols; i++) {
+					if (i > 1) System.out.print(",  ");
+					String cVal = orders.getString(i);
+					System.out.print(cVal + " " + md.getColumnName(i));
+				}
+				System.out.println("");
+			}
+			ResultSet products = stmt.executeQuery(productsQ);
+			md = products.getMetaData();
+			int cols = md.getColumnCount();
+			while (products.next()) {
+				for (int i = 1; i <= cols; i++) {
+					if (i > 1) System.out.print(",  ");
+					String cVal = products.getString(i);
+					System.out.print(cVal + " " + md.getColumnName(i));
+				}
+				System.out.println("");
+			}
+		} catch(SQLException e) {
+			String message = e.getMessage();
+			System.out.println("Message: " + message);
+		}
 	}
 	
 	static void addProductToOrder(Connection conn, Statement stmt,Scanner sc){
