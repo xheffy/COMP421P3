@@ -1,0 +1,15 @@
+db2 connect to cs421;
+  db2 -td@ -vf trig.sql;
+  db2 "select * from orderlist";
+  db2 "select * from transactions";
+  db2 "select * from orders";
+  db2 "insert into transactions values(111, 111, '13:13:13', '10/10/2016', 33.33, 'debit')";
+  db2 "insert into orders values(111,'13:13:13','10/10/2016',2.22,'aa','ab','vchap@yahoo.ca',NULL,NULL,'Joseph King','543 Peel St.,Montreal,QC,Canada,F7R1C4')";
+  db2 "insert into orderlist values(111,10,11)";
+  db2 "select * from orderlist";
+  db2 "select * from orders";
+  db2 "select * from transactions";
+  db2 "delete from TRANSACTIONS where ORDERNO = 111";
+  db2 "select * from transactions";
+  db2 "select * from orders";
+  db2 "select * from orderlist";

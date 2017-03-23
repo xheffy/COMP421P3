@@ -1,0 +1,138 @@
+
+   Database Connection Information
+
+ Database server        = DB2/LINUXX8664 10.5.3
+ SQL authorization ID   = CS421G15
+ Local database alias   = CS421
+
+CREATE OR REPLACE TRIGGER TRIG 
+AFTER DELETE ON TRANSACTIONS
+REFERENCING OLD AS O
+FOR EACH ROW MODE DB2SQL
+BEGIN
+DELETE FROM ORDERS WHERE O.ORDERNO = ORDERNO;
+DELETE FROM ORDERLIST WHERE O.ORDERNO = ORDERNO;
+END
+
+DB20000I  The SQL command completed successfully.
+
+
+ORDERNO     PID         QUANTITY   
+----------- ----------- -----------
+        100          10          16
+         98          12          10
+         27           7          30
+        111          10          11
+
+  4 record(s) selected.
+
+
+TID         ORDERNO     TRANSTIME TRANSDATE  TRANSAMOUNT  PAYMENTTYPE    
+----------- ----------- --------- ---------- ------------ ---------------
+       1450         100 13:35:12  10/16/2016        35.30 credit         
+        154          13 05:30:11  03/03/2014        10.70 debit          
+         13          98 12:12:12  02/22/2017         8.65 cash           
+         57          27 10:24:35  12/24/2015        51.60 credit         
+         70         140 11:22:33  02/13/2017        12.45 debit          
+
+  5 record(s) selected.
+
+
+ORDERNO     ORDERTIME ORDERDATE  ORDERAMOUNT  CARDMESSAGE                                                                                                                                                                                                                                                PAYMENTSTATUS   EMAIL                                                                                                DELIVERYTIME DELIVERYDATE RECIPIENTNAME                                      RECIPIENTADDRESS                                                                                    
+----------- --------- ---------- ------------ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- --------------- ---------------------------------------------------------------------------------------------------- ------------ ------------ -------------------------------------------------- ----------------------------------------------------------------------------------------------------
+        140 11:22:33  02/13/2017        12.45 Dear Suzanne, I love you.                                                                                                                                                                                                                                  done            kirkb@gmail.com                                                                                      10:10:10     02/14/2017   Suzanne Paquette                                   421 CathCart St.,Montreal,QC,Canada,U8V7C0                                                          
+        100 13:35:12  10/16/2016        68.30 Happy Birthday!                                                                                                                                                                                                                                            done            vchap@yahoo.ca                                                                                       16:16:16     10/16/2016   Joseph King                                        543 Peel St.,Montreal,QC,Canada,F7R1C4                                                              
+         27 10:24:35  12/24/2015       179.10 -                                                                                                                                                                                                                                                          done            christheboss@hotmail.com                                                                             -            -            Brooklyn Shawn                                     446 Mansfield St.,Montreal,QC,Canada,C2F4N3                                                         
+         98 12:12:12  02/22/2017         8.65 Goodluck!                                                                                                                                                                                                                                                  done            asmith@hotmail.com                                                                                   01:45:00     02/23/2017   Brandon Hunter                                     987 Crescent St.,Montreal,QC,Canada,K9B2D4                                                          
+         13 05:30:11  03/03/2014        10.70 Get well soon!                                                                                                                                                                                                                                             done            sarahparker@hotmail.com                                                                              03:30:00     03/05/2014   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+        165 09:25:38  08/08/2015        50.55 See you tonight!                                                                                                                                                                                                                                           cancelled       cartersteve@yahoo.ca                                                                                 02:45:12     08/08/2015   Calvin Mavin                                       123 Stanley St.,Montreal,QC,Canada,P2V1S9                                                           
+         24 07:31:11  03/03/2015        10.70 Have a nice day!                                                                                                                                                                                                                                           done            sarahparker@hotmail.com                                                                              02:35:00     03/04/2015   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+        111 13:13:13  10/10/2016         2.22 aa                                                                                                                                                                                                                                                         ab              vchap@yahoo.ca                                                                                       -            -            Joseph King                                        543 Peel St.,Montreal,QC,Canada,F7R1C4                                                              
+
+  8 record(s) selected.
+
+DB20000I  The SQL command completed successfully.
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0803N  One or more values in the INSERT statement, UPDATE statement, or 
+foreign key update caused by a DELETE statement are not valid because the 
+primary key, unique constraint or unique index identified by "1" constrains 
+table "CS421G15.ORDERS" from having duplicate values for the index key.  
+SQLSTATE=23505
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0803N  One or more values in the INSERT statement, UPDATE statement, or 
+foreign key update caused by a DELETE statement are not valid because the 
+primary key, unique constraint or unique index identified by "1" constrains 
+table "CS421G15.ORDERLIST" from having duplicate values for the index key.  
+SQLSTATE=23505
+
+ORDERNO     PID         QUANTITY   
+----------- ----------- -----------
+        100          10          16
+         98          12          10
+         27           7          30
+        111          10          11
+
+  4 record(s) selected.
+
+
+ORDERNO     ORDERTIME ORDERDATE  ORDERAMOUNT  CARDMESSAGE                                                                                                                                                                                                                                                PAYMENTSTATUS   EMAIL                                                                                                DELIVERYTIME DELIVERYDATE RECIPIENTNAME                                      RECIPIENTADDRESS                                                                                    
+----------- --------- ---------- ------------ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- --------------- ---------------------------------------------------------------------------------------------------- ------------ ------------ -------------------------------------------------- ----------------------------------------------------------------------------------------------------
+        140 11:22:33  02/13/2017        12.45 Dear Suzanne, I love you.                                                                                                                                                                                                                                  done            kirkb@gmail.com                                                                                      10:10:10     02/14/2017   Suzanne Paquette                                   421 CathCart St.,Montreal,QC,Canada,U8V7C0                                                          
+        100 13:35:12  10/16/2016        68.30 Happy Birthday!                                                                                                                                                                                                                                            done            vchap@yahoo.ca                                                                                       16:16:16     10/16/2016   Joseph King                                        543 Peel St.,Montreal,QC,Canada,F7R1C4                                                              
+         27 10:24:35  12/24/2015       179.10 -                                                                                                                                                                                                                                                          done            christheboss@hotmail.com                                                                             -            -            Brooklyn Shawn                                     446 Mansfield St.,Montreal,QC,Canada,C2F4N3                                                         
+         98 12:12:12  02/22/2017         8.65 Goodluck!                                                                                                                                                                                                                                                  done            asmith@hotmail.com                                                                                   01:45:00     02/23/2017   Brandon Hunter                                     987 Crescent St.,Montreal,QC,Canada,K9B2D4                                                          
+         13 05:30:11  03/03/2014        10.70 Get well soon!                                                                                                                                                                                                                                             done            sarahparker@hotmail.com                                                                              03:30:00     03/05/2014   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+        165 09:25:38  08/08/2015        50.55 See you tonight!                                                                                                                                                                                                                                           cancelled       cartersteve@yahoo.ca                                                                                 02:45:12     08/08/2015   Calvin Mavin                                       123 Stanley St.,Montreal,QC,Canada,P2V1S9                                                           
+         24 07:31:11  03/03/2015        10.70 Have a nice day!                                                                                                                                                                                                                                           done            sarahparker@hotmail.com                                                                              02:35:00     03/04/2015   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+        111 13:13:13  10/10/2016         2.22 aa                                                                                                                                                                                                                                                         ab              vchap@yahoo.ca                                                                                       -            -            Joseph King                                        543 Peel St.,Montreal,QC,Canada,F7R1C4                                                              
+
+  8 record(s) selected.
+
+
+TID         ORDERNO     TRANSTIME TRANSDATE  TRANSAMOUNT  PAYMENTTYPE    
+----------- ----------- --------- ---------- ------------ ---------------
+       1450         100 13:35:12  10/16/2016        35.30 credit         
+        154          13 05:30:11  03/03/2014        10.70 debit          
+         13          98 12:12:12  02/22/2017         8.65 cash           
+         57          27 10:24:35  12/24/2015        51.60 credit         
+         70         140 11:22:33  02/13/2017        12.45 debit          
+        111         111 13:13:13  10/10/2016        33.33 debit          
+
+  6 record(s) selected.
+
+DB20000I  The SQL command completed successfully.
+
+TID         ORDERNO     TRANSTIME TRANSDATE  TRANSAMOUNT  PAYMENTTYPE    
+----------- ----------- --------- ---------- ------------ ---------------
+       1450         100 13:35:12  10/16/2016        35.30 credit         
+        154          13 05:30:11  03/03/2014        10.70 debit          
+         13          98 12:12:12  02/22/2017         8.65 cash           
+         57          27 10:24:35  12/24/2015        51.60 credit         
+         70         140 11:22:33  02/13/2017        12.45 debit          
+
+  5 record(s) selected.
+
+
+ORDERNO     ORDERTIME ORDERDATE  ORDERAMOUNT  CARDMESSAGE                                                                                                                                                                                                                                                PAYMENTSTATUS   EMAIL                                                                                                DELIVERYTIME DELIVERYDATE RECIPIENTNAME                                      RECIPIENTADDRESS                                                                                    
+----------- --------- ---------- ------------ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- --------------- ---------------------------------------------------------------------------------------------------- ------------ ------------ -------------------------------------------------- ----------------------------------------------------------------------------------------------------
+        140 11:22:33  02/13/2017        12.45 Dear Suzanne, I love you.                                                                                                                                                                                                                                  done            kirkb@gmail.com                                                                                      10:10:10     02/14/2017   Suzanne Paquette                                   421 CathCart St.,Montreal,QC,Canada,U8V7C0                                                          
+        100 13:35:12  10/16/2016        68.30 Happy Birthday!                                                                                                                                                                                                                                            done            vchap@yahoo.ca                                                                                       16:16:16     10/16/2016   Joseph King                                        543 Peel St.,Montreal,QC,Canada,F7R1C4                                                              
+         27 10:24:35  12/24/2015       179.10 -                                                                                                                                                                                                                                                          done            christheboss@hotmail.com                                                                             -            -            Brooklyn Shawn                                     446 Mansfield St.,Montreal,QC,Canada,C2F4N3                                                         
+         98 12:12:12  02/22/2017         8.65 Goodluck!                                                                                                                                                                                                                                                  done            asmith@hotmail.com                                                                                   01:45:00     02/23/2017   Brandon Hunter                                     987 Crescent St.,Montreal,QC,Canada,K9B2D4                                                          
+         13 05:30:11  03/03/2014        10.70 Get well soon!                                                                                                                                                                                                                                             done            sarahparker@hotmail.com                                                                              03:30:00     03/05/2014   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+        165 09:25:38  08/08/2015        50.55 See you tonight!                                                                                                                                                                                                                                           cancelled       cartersteve@yahoo.ca                                                                                 02:45:12     08/08/2015   Calvin Mavin                                       123 Stanley St.,Montreal,QC,Canada,P2V1S9                                                           
+         24 07:31:11  03/03/2015        10.70 Have a nice day!                                                                                                                                                                                                                                           done            sarahparker@hotmail.com                                                                              02:35:00     03/04/2015   Vincent Simpson                                    087 Atwater Ave.,Montreal,QC,Canada,Y8W3X0                                                          
+
+  7 record(s) selected.
+
+
+ORDERNO     PID         QUANTITY   
+----------- ----------- -----------
+        100          10          16
+         98          12          10
+         27           7          30
+
+  3 record(s) selected.
+
