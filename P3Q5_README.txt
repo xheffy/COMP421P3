@@ -1,0 +1,1 @@
+When a transaction record is deleted, the trigger would go ahead and also delete  the order entity.
