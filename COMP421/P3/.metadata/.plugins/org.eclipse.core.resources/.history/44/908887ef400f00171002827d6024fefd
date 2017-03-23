@@ -1,0 +1,191 @@
+/* COMP 421 project deliverable 3
+ * Group 15
+ * 
+ */
+
+import java.util.*;
+import java.sql.*;
+import java.math.*;
+
+
+public class MainApp {
+	public static void main(String args[]) throws SQLException{   
+
+		//Set up driver
+		try {
+			Driver myDriver = new com.ibm.db2.jcc.DB2Driver();
+			DriverManager.registerDriver (myDriver);
+		} catch (SQLException ex) {
+			   System.out.println("Driver Setup Error");
+			   System.exit(1);
+		}
+		
+		//Connect to DB
+		String url = "jdbc:db2://comp421.cs.mcgill.ca:50000/cs421";
+		Connection conn = null;
+		
+		try {
+			conn = DriverManager.getConnection(url, "cs421g15", "fsdb1517");
+		} catch (SQLException sqle) {
+			System.out.println("CONNECTION ERROR State: " + sqle.getSQLState());
+			System.out.println("CONNECTION ERROR Message: " + sqle.getMessage());
+			System.exit(1);
+		} 
+		
+		Statement stmt = conn.createStatement();
+		Scanner sc = new Scanner(System.in);
+		
+		try { 
+			boolean end = true; 
+			while(end){ 
+				int choice = getOptionInput(sc);
+
+				switch (choice) {
+					case 1:	queryEmployeeList(conn,stmt);
+							break;
+					case 2: queryCustomerOrder(conn,stmt);
+							break;
+					case 3: queryOrderProducts(conn,stmt);
+							break;
+					case 4: addProductToOrder(conn,stmt,sc);
+							break;
+					case 5:	deleteProductFromOrder(conn,stmt,sc);
+							break;
+					case 6: end = false;
+							break;
+					default: System.out.println("Invalid input. Returning to main menu..."); 
+							break;
+				} 
+			} 
+			System.out.println("Quitting application .... ");
+			//Disconnect 	
+		} finally {
+			try {
+				sc.close();
+				stmt.close();
+				conn.close();
+			} catch (SQLException e){
+				System.out.println("Could not close JDBC connection");
+			}
+		} 
+	} 
+
+	//Shows menu and returns user choice integer.
+	static int getOptionInput(Scanner sc){
+		System.out.println("------------------------------------------");
+		System.out.println("--------------- MAIN MENU ----------------");
+		System.out.println("-----1. Show list of employees------------");
+		System.out.println("-----2. Show all orders from a user-------");
+		System.out.println("-----3. Show order details ---------------");
+		System.out.println("-----4. Add a product to an order---------");
+		System.out.println("-----5. Delete a product from an order----");
+		System.out.println("-----6. Quit Application------------------");
+		System.out.println("------------------------------------------");
+		System.out.println("---Please type the number corresponding---");
+		System.out.println("---to the action you want to perform------");
+
+		int choice = 0;
+		
+		if (sc.hasNext()){
+			try{
+			    choice = Integer.parseInt(sc.nextLine());
+			} catch (NumberFormatException e) {
+			    System.out.println("You did not input an integer.");
+			}
+		}
+		
+		System.out.println("------------------------------------------");
+		return choice;
+	}
+
+	static void queryEmployeeList(Connection conn, Statement stmt){
+	
+	}
+
+	static void queryCustomerOrder(Connection conn, Statement stmt){
+	
+	}
+
+	static void queryOrderProducts(Connection conn, Statement stmt){
+		//display Order info (with all order attributes) and products in the Order with all 
+		//product attributes (see ER diagram from p2 submission) except inventoryCount 
+		//and price
+		//uses 2 SQL statements: one to retrieve the order info and one to retrieve the 
+		//products list for the order 
+	}
+	
+	static void addProductToOrder(Connection conn, Statement stmt,Scanner sc){
+		//take as input orderID, then take as input pid
+		//uses 2 SQL statements: one to add the product to the order using OrderList 
+		//entity, and one to update the orderAmount
+		System.out.println("To which order do you wish to add products?");
+		System.out.println("Input the orderNo:");
+		int orderNo = sc.nextInt();
+		System.out.println("Which product do you wish to add to this order?");
+		System.out.println("Input the pid:");
+		int pid = sc.nextInt();
+		System.out.println("How many such products do you wish to add to the given order?");
+		System.out.println("Input the quantity:");
+		int quantity = sc.nextInt();
+		try{ 
+			try{
+	            String check = "UPDATE OrderList SET quantity = quantity+" + quantity + " WHERE orderNo = " + orderNo + " AND pid = " + pid;
+			    stmt.executeUpdate(check);
+	            String updateOrderAmount = "UPDATE Orders SET orderAmount = orderAmount + (SELECT price FROM Products WHERE pid = " + pid + ")*" + quantity + "WHERE Orders.orderNo = " + orderNo;
+			    stmt.executeUpdate(updateOrderAmount);
+	            System.out.println("Record for given orderNo and pid already exists in OrderList table.");
+	            System.out.println("Quantity was incremented.");
+			}
+			catch(SQLException e){
+	            String insertProduct = "INSERT INTO OrderList VALUES(" + orderNo + "," + pid +"," + quantity + ")"; 
+			    stmt.executeUpdate(insertProduct);
+	            System.out.println("No record exists for given orderNo and pid in OrderList table.");
+	            System.out.println("New record created.");
+			    String updateOrderAmount = "UPDATE Orders SET orderAmount = orderAmount + (SELECT price FROM Products WHERE pid = " + pid + ")*" + quantity + "WHERE Orders.orderNo = " + orderNo;
+			    stmt.executeUpdate(updateOrderAmount);
+			}
+		    System.out.println("Product was added to given order and the order amount was increased accordingly.");
+		}
+		catch(SQLException e)
+		{
+			String message = e.getMessage(); // Get SQLMESSAGE
+			int sqlCode = e.getErrorCode(); // Get SQLCODE
+            String sqlState = e.getSQLState(); // Get SQLSTATE
+            System.out.println("Product and order amount update failed.");
+            System.out.println("Message: " + message + "\nCode: " + sqlCode + "\nsqlState: " + sqlState);
+		}
+	}
+
+	static void deleteProductFromOrder(Connection conn, Statement stmt,Scanner sc){
+		//take as input orderID, then take as input pid
+		//delete product from order using OrderList entity
+		System.out.println("From which order do you wish to delete products?");
+		System.out.println("Input the orderNo:");
+		int orderNo = sc.nextInt();
+		System.out.println("Which product do you wish to delete from this order?");
+		System.out.println("Input the pid:");
+		int pid = sc.nextInt();
+		try{
+			String deleteSQL = "DELETE FROM OrderList WHERE orderNo = " + orderNo + " AND pid = " + pid;
+		    int code = stmt.executeUpdate(deleteSQL);
+		    System.out.println(code);
+		    if (code==0)
+		    {
+		    	System.out.println("Deletion of product from order failed.");
+	            System.out.println("No record exists for given order and product in OrderList table.");
+	        }
+		    else
+		    {
+			    System.out.println("All products with given pid were deleted from the specified order.");
+			    //Update orderamount
+		    }
+		}
+		catch(SQLException e)
+		{
+			String message = e.getMessage(); // Get SQLMESSAGE
+			int sqlCode = e.getErrorCode(); // Get SQLCODE
+            String sqlState = e.getSQLState(); // Get SQLSTATE
+            System.out.println("Message: " + message + "\nCode: " + sqlCode + "\nsqlState: " + sqlState);
+		}
+	}
+}
