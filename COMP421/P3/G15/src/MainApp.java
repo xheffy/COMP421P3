@@ -98,7 +98,7 @@ public class MainApp {
 	}
 
 	static void queryEmployeeList(Connection conn, Statement stmt) {
-		String empListQ = "SELECT eid, name, role FROM Employees";
+		String empListQ = "SELECT * FROM Employees";
 		try {
 			ResultSet emps = stmt.executeQuery(empListQ);
 			ResultSetMetaData md = emps.getMetaData();
@@ -118,7 +118,8 @@ public class MainApp {
 	}
 
 	static void queryCustomerOrder(Connection conn, Statement stmt, Scanner sc) {
-		System.out.println("Please enter the email of the customer whose orders you wish to view: ");
+		System.out.println("What is the email of the customer whose orders you wish to view?");
+		System.out.println("Enter the customer's email:");
 		String email = sc.nextLine();
 		String custOrderQ = "SELECT * FROM Orders WHERE email = '" + email + "'";
 		try {
@@ -140,10 +141,11 @@ public class MainApp {
 	}
 
 	static void queryOrderProducts(Connection conn, Statement stmt, Scanner sc) {
-		System.out.println("Please enter the order no. for the order you wish to view: ");
+		System.out.println("What is the order you wish to view details for?");
+		System.out.println("Enter the orderNo: ");
 		int ono = sc.nextInt();
 		String ordersQ = "SELECT * FROM Orders WHERE orderNo = " + ono;
-		String productsQ = "SELECT P.pid AS id, P.productName AS name, L.quantity AS count FROM Orders O, OrderList L, Products P WHERE O.orderNo = " + ono + " AND O.orderNo = L.orderNo AND L.pid = P.pid";
+		String productsQ = "SELECT L.orderno, L.pid, L.quantity, P.productName FROM OrderList L, Products P WHERE L.pid = P.pid AND L.orderNo = " + ono;
 		try {
 			ResultSet orders = stmt.executeQuery(ordersQ);
 			ResultSetMetaData md = orders.getMetaData();
@@ -176,13 +178,13 @@ public class MainApp {
 	
 	static void addProductToOrder(Connection conn, Statement stmt,Scanner sc){
 		System.out.println("To which order do you wish to add products?");
-		System.out.println("Input the orderNo:");
+		System.out.println("Enter the orderNo:");
 		int orderNo = sc.nextInt();
 		System.out.println("Which product do you wish to add to this order?");
-		System.out.println("Input the pid:");
+		System.out.println("Enter the pid:");
 		int pid = sc.nextInt();
 		System.out.println("How many such products do you wish to add to the given order?");
-		System.out.println("Input the quantity:");
+		System.out.println("Enter the quantity:");
 		int quantity = sc.nextInt();
 		sc.nextLine();
 		try{ 
@@ -248,10 +250,10 @@ public class MainApp {
 
 	static void deleteProductFromOrder(Connection conn, Statement stmt,Scanner sc){
 		System.out.println("From which order do you wish to delete products?");
-		System.out.println("Input the orderNo:");
+		System.out.println("Enter the orderNo:");
 		int orderNo = sc.nextInt();
 		System.out.println("Which product do you wish to delete from this order?");
-		System.out.println("Input the pid:");
+		System.out.println("Enter the pid:");
 		int pid = sc.nextInt();
 		sc.nextLine();
 		try{
