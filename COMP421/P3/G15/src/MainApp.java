@@ -42,9 +42,9 @@ public class MainApp {
 				switch (choice) {
 					case 1:	queryEmployeeList(conn,stmt);
 							break;
-					case 2: queryCustomerOrder(conn,stmt);
+					case 2: queryCustomerOrder(conn,stmt, sc);
 							break;
-					case 3: queryOrderProducts(conn,stmt);
+					case 3: queryOrderProducts(conn,stmt, sc);
 							break;
 					case 4: addProductToOrder(conn,stmt,sc);
 							break;
@@ -98,7 +98,7 @@ public class MainApp {
 	}
 
 	static void queryEmployeeList(Connection conn, Statement stmt) {
-		String empListQ = "SELECT * FROM Employees";
+		String empListQ = "SELECT eid, name, role FROM Employees";
 		try {
 			ResultSet emps = stmt.executeQuery(empListQ);
 			ResultSetMetaData md = emps.getMetaData();
@@ -120,7 +120,7 @@ public class MainApp {
 	static void queryCustomerOrder(Connection conn, Statement stmt, Scanner sc) {
 		System.out.println("Please enter the email of the customer whose orders you wish to view: ");
 		String email = sc.nextLine();
-		String custOrderQ = "SELECT * FROM Orders WHERE email = " + email;
+		String custOrderQ = "SELECT * FROM Orders WHERE email = '" + email + "'";
 		try {
 			ResultSet orders = stmt.executeQuery(custOrderQ);
 			ResultSetMetaData md = orders.getMetaData();
@@ -139,7 +139,7 @@ public class MainApp {
 		}
 	}
 
-	static void queryOrderProducts(Connection conn, Statement stmt, Scanner, sc) {
+	static void queryOrderProducts(Connection conn, Statement stmt, Scanner sc) {
 		System.out.println("Please enter the order no. for the order you wish to view: ");
 		int ono = sc.nextInt();
 		String ordersQ = "SELECT * FROM Orders WHERE orderNo = " + ono;
@@ -158,7 +158,7 @@ public class MainApp {
 			}
 			ResultSet products = stmt.executeQuery(productsQ);
 			md = products.getMetaData();
-			int cols = md.getColumnCount();
+			cols = md.getColumnCount();
 			while (products.next()) {
 				for (int i = 1; i <= cols; i++) {
 					if (i > 1) System.out.print(",  ");
@@ -167,6 +167,7 @@ public class MainApp {
 				}
 				System.out.println("");
 			}
+			sc.nextLine();
 		} catch(SQLException e) {
 			String message = e.getMessage();
 			System.out.println("Message: " + message);
